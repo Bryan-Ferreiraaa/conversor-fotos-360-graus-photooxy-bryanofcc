@@ -97,51 +97,68 @@ body{
 const fileUpload = document.getElementById('file-upload');
 const downloadBtn = document.getElementById('download-btn');
 const canvas = document.getElementById('conversion-canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false }); // Otimização de performance
 
 fileUpload.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Feedback visual de carregamento
+    downloadBtn.innerText = "Processando...";
+    downloadBtn.disabled = true;
+
     const reader = new FileReader();
     reader.onload = function(event) {
         const img = new Image();
         img.onload = function() {
-
-            // 1. FORÇAR PROPORÇÃO 2:1
+            // Definimos 4096x2048 para compatibilidade máxima (Facebook/Google)
             canvas.width = 4096;
             canvas.height = 2048;
 
-            // 2. PREENCHER TODO CANVAS
+            // Limpa e desenha para cobrir os polos (evita o círculo preto)
+            ctx.fillStyle = "#000"; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Renderiza a imagem esticada para o formato equirretangular (2:1)
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            const processedDataUrl = canvas.toDataURL("image/png");
+            // Criamos o Blob para o Visualizador não travar a memória
+            canvas.toBlob((blob) => {
+                const processedUrl = URL.createObjectURL(blob);
+                
+                // Atualiza o visualizador Pannellum
+                document.getElementById('panorama-container').innerHTML = '';
+                pannellum.viewer('panorama-container', {
+                    "type": "equirectangular",
+                    "panorama": processedUrl,
+                    "autoLoad": true,
+                    "hfov": 110,
+                    "vaov": 180,
+                    "haov": 360,
+                    "orientationOnDeviceHelp": false
+                });
 
-            // 3. PREVIEW 360
-            document.getElementById('panorama-container').innerHTML = '';
-            pannellum.viewer('panorama-container', {
-                "type": "equirectangular",
-                "panorama": processedDataUrl,
-                "autoLoad": true,
-                "hfov": 110,
-                "vaov": 180,
-                "haov": 360
-            });
+                // Prepara o botão de download
+                downloadBtn.innerText = "💾 Baixar PNG 360°";
+                downloadBtn.disabled = false;
+                
+                // Armazenamos a URL no botão para uso posterior
+                downloadBtn.onclick = function() {
+                    const link = document.createElement('a');
+                    link.download = `panorama_360_${Date.now()}.png`;
+                    link.href = processedUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
 
-            downloadBtn.disabled = false;
+            }, 'image/png');
         };
         img.src = event.target.result;
     };
     reader.readAsDataURL(file);
 });
 
-// DOWNLOAD
-downloadBtn.addEventListener('click', function() {
-    const link = document.createElement('a');
-    link.download = 'meu-panorama-360.png';
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-});
 
 </script>
 
