@@ -1,0 +1,1 @@
+# conversor-fotos-360-graus-photooxy-bryanofcc
