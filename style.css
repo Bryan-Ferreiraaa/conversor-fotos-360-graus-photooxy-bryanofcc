@@ -1,0 +1,108 @@
+/* Configurações Globais (Fundo e Texto) */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a; /* Escuro como na imagem */
+    color: white;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #ccc;
+    font-size: 1em;
+    margin-bottom: 30px;
+}
+
+/* Área de Controles e Botões */
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Estilo Base dos Botões */
+.btn {
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botão Verde de Carregar */
+.primary {
+    background-color: #00ff88; /* Verde Néon */
+    color: #000;
+}
+
+.primary:hover {
+    background-color: #00cc6e;
+    transform: scale(1.05);
+}
+
+/* Botões Cinzas de Download */
+.secondary {
+    background-color: #333; /* Cinza escuro */
+    color: #fff;
+}
+
+.secondary:hover:not(:disabled) {
+    background-color: #444;
+}
+
+/* Estado Desabilitado dos Botões */
+.btn:disabled {
+    background-color: #2a2a2a;
+    color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* === A CORREÇÃO DO SEU BUG === */
+/* Isso esconde o botão "Nenhum arquivo escolhido" original do navegador */
+#file-upload {
+    display: none;
+}
+
+/* O CONTAINER DO PREVIEW 360° */
+#panorama-container {
+    width: 100%;
+    height: 60vh; /* Ocupa 60% da altura da tela */
+    min-height: 400px;
+    background-color: #2d2d2d;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 3px solid #00ff88; /* Borda verde néon como destaque */
+    position: relative;
+    margin-top: 20px;
+}
+
+#placeholder-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+    font-size: 1.2em;
+}
