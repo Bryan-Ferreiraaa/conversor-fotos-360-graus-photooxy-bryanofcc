@@ -1,166 +1,39 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conversor 360° Pro - Equirretangular</title>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
-
-<style>
-
-/* ... (mantenha o anterior e adicione/altere estes) ... */
-body{
-    background:#1a1a1a;
-    color:white;
-    font-family:Arial, Helvetica, sans-serif;
-    margin:0;
-    text-align:center;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:20px;
-}
-
-.controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.btn {
-    padding: 12px 25px;
-    border-radius: 8px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.primary { background: #00ff88; color: #1a1a1a; }
-.secondary { background: #555; color: white; }
-
-.btn:disabled {
-    background: #333;
-    color: #666;
-    cursor: not-allowed;
-}
-
-#panorama-container {
-    width: 100%;
-    height: 550px;
-    border: 2px solid #00ff88;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-}
-
-#placeholder-text{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    height:100%;
-    color:#888;
-    font-size:18px;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor 360° Universal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="container">
-<header>
-<h1>Conversor 360° Universal</h1>
-<p>Prepare suas fotos para Facebook, Street View e VR</p>
-</header>
+    <div class="container">
+        <header>
+            <h1>Conversor 360° Universal</h1>
+            <p>Prepare suas fotos para Facebook, Street View e VR</p>
+        </header>
 
-<div class="controls">
-<label for="file-upload" class="btn primary">📁 Carregar Foto</label>
-<input id="file-upload" type="file" accept="image/*" style="display:none"/>
-
-<button id="download-btn" class="btn secondary" disabled>💾 Baixar PNG 360°</button>
-</div>
-
-<div id="panorama-container">
-<div id="placeholder-text">O preview 360° aparecerá aqui</div>
-</div>
-
-<canvas id="conversion-canvas" style="display:none;"></canvas>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
-
-<script>
-
-const fileUpload = document.getElementById('file-upload');
-const downloadBtn = document.getElementById('download-btn');
-const canvas = document.getElementById('conversion-canvas');
-const ctx = canvas.getContext('2d', { alpha: false }); // Otimização de performance
-
-fileUpload.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Feedback visual de carregamento
-    downloadBtn.innerText = "Processando...";
-    downloadBtn.disabled = true;
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const img = new Image();
-        img.onload = function() {
-            // Definimos 4096x2048 para compatibilidade máxima (Facebook/Google)
-            canvas.width = 4096;
-            canvas.height = 2048;
-
-            // Limpa e desenha para cobrir os polos (evita o círculo preto)
-            ctx.fillStyle = "#000"; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        <div class="controls">
+            <label for="file-upload" class="btn primary">
+                <span class="icon">📁</span>
+                <span class="text">Carregar Foto</span>
+            </label>
+            <input id="file-upload" type="file" accept="image/*"/>
             
-            // Renderiza a imagem esticada para o formato equirretangular (2:1)
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            <button id="download-jpg" class="btn secondary" disabled>💾 Baixar 360° Leve (JPG)</button>
+            <button id="download-png" class="btn secondary" disabled>💾 Baixar 360° Full (PNG)</button>
+        </div>
 
-            // Criamos o Blob para o Visualizador não travar a memória
-            canvas.toBlob((blob) => {
-                const processedUrl = URL.createObjectURL(blob);
-                
-                // Atualiza o visualizador Pannellum
-                document.getElementById('panorama-container').innerHTML = '';
-                pannellum.viewer('panorama-container', {
-                    "type": "equirectangular",
-                    "panorama": processedUrl,
-                    "autoLoad": true,
-                    "hfov": 110,
-                    "vaov": 180,
-                    "haov": 360,
-                    "orientationOnDeviceHelp": false
-                });
+        <div id="panorama-container">
+            <div id="placeholder-text">Sua foto aparecerá aqui em 360°</div>
+        </div>
 
-                // Prepara o botão de download
-                downloadBtn.innerText = "💾 Baixar PNG 360°";
-                downloadBtn.disabled = false;
-                
-                // Armazenamos a URL no botão para uso posterior
-                downloadBtn.onclick = function() {
-                    const link = document.createElement('a');
-                    link.download = `panorama_360_${Date.now()}.png`;
-                    link.href = processedUrl;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                };
+        <canvas id="conversion-canvas" style="display:none;"></canvas>
+    </div>
 
-            }, 'image/png');
-        };
-        img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
-});
-
-
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
